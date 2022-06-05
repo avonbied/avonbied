@@ -42,13 +42,15 @@ jobs:
           ${{ runner.os }}-yarn-
 
     - run: |
-        echo $(pwd)
+        cd ${{ inputs.app_dir }}
         yarn install --frozen-lockfile
     - run: |
         echo $(pwd)
+        cd ${{ inputs.app_dir }}
         yarn build
     - run: |
         echo $(pwd)
+        cd ${{ inputs.app_dir }}
         yarn export
 
     - name: Deploy
