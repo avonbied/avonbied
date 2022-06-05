@@ -41,16 +41,11 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-yarn-
 
-    - run: |
+    - name: Run Yarn
+      run: |
         cd ${{ inputs.app_dir }}
         yarn install --frozen-lockfile
-    - run: |
-        echo $(pwd)
-        cd ${{ inputs.app_dir }}
         yarn build
-    - run: |
-        echo $(pwd)
-        cd ${{ inputs.app_dir }}
         yarn export
 
     - name: Deploy
