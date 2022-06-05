@@ -2,6 +2,10 @@ name: Build NuxtJS GitHub Pages
 
 on:
   workflow_call:
+    inputs:
+      app_dir:
+        required: true
+        type: string
     # secrets: inherit
 
 jobs:
@@ -18,6 +22,10 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: '14'
+
+    - name: Change to App Dir
+      id: cd-app
+      run: cd ${{ inputs.app_dir }}
 
     - name: Get yarn cache
       id: yarn-cache
@@ -40,4 +48,5 @@ jobs:
       if: ${{ github.ref == 'refs/heads/main' }}
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./src/out
+        publish_dir: ${{ inputs.app_dir }}/out
+        force_orphan: true
