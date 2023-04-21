@@ -6,3 +6,5 @@
 [![Spotify](https://img.shields.io/badge/-Spotify-darkgreen?style=flat&logo=spotify)](https://open.spotify.com/user/lexvonbon)  
   
 [![Avonbied's GitHub stats](https://github-readme-stats.vercel.app/api?username=avonbied)](https://github.com/anuraghazra/github-readme-stats)
+
+[![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=avonbied&layout=compact)](https://github.com/anuraghazra/github-readme-stats)
