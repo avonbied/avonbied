@@ -1,0 +1,37 @@
+let
+	/*
+	* This assumes the Excel is:
+	* - Stored in SharePoint
+	* - Has its base filename in the format "[Report]-[UploadDate]" (upload date appended)
+	* - Has the desired sheet named as the [Report]
+	*/
+	_SharePointSite = "https://<siteURL>/sites/<siteID>",
+	_SharePointFolder = "/<path>/<to>/<folder>/",
+	_Report = "<report>",
+	_DateFormat = "YYYYMMDD",
+
+	// Get available file versions
+	Source = SharePoint.Files(_SharePointSite, [ApiVersion = 15]),
+	FilterFiles = Table.SelectRows(Source, each (
+		Text.Contains([Folder Path], _SharePointFolder)
+		and Text.StartsWith([Name], _Report)
+		and [Extension]=".xlsx")
+	),
+
+	// Get the most current Excel
+	AddDateStamp = Table.TransformColumnTypes(
+		Table.AddColumn(FilterFiles, "DateStamp",
+			each Date.From(
+				Text.Middle([Name], Text.Length(_Report) + 1, Text.Length(_DateFormat))
+			)
+		)
+	),
+
+	KeepMostCurrent = Table.First(Table.Sort(AddDateStamp, {{"DateStamp", Order.Descending}})),
+	
+	// Load the file data
+	OpenFile = KeepMostCurrent[Content],
+	LoadWorkbook = Excel.Workbook(OpenFile){[Item=_Report,Kind="Sheet"]}[Data],
+	PromoteHeaders = Table.PromoteHeaders(LoadWorkbook, [PromoteAllScalars=true])
+in
+	PromoteHeaders

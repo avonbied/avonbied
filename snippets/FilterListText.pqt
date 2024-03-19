@@ -1,0 +1,15 @@
+let
+	/*
+	* This assumes the column represents:
+	* - A list of delimited values (such as "value1;value2")
+	* - Values that are whitespace trimmable (ie no need for leading/trailing spaces)
+	*/
+	FilterListValue = (ColumnValue as text, FilterValue as text, optional Separator as text) => let
+		_Sep = if Separator = null then "; " else Separator,
+		SplitText = Text.Split(ColumnValue, _Sep),
+		FilterList = List.Select(SplitText, each Text.Contains(_, FilterValue)),
+		JoinList = Text.Combine(List.Transform(FilterList, Text.Trim), _Sep)
+	in
+		JoinList
+in
+	FilterListValue
