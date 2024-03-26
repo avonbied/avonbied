@@ -9,3 +9,10 @@ Select-String -Path $file -Pattern $pattern
 
 # Output all running/stopped services
 Get-Service | Select-Object -Property Name, DisplayName, Status, ServiceType, @{l='DependentServices';e={[string]::join(';',($_.DependentServices.Name))}}, @{l='ServicesDependedOn';e={[string]::join(';',($_.ServicesDependedOn.Name))}} | -Path "$env:COMPUTERNAME.csv"
+
+# Resolve DNS records for list of RecordNames (objects with a 'RecordName' property)
+$records | ForEach-Object {
+	$initial = Resolve-DnsName $_.RecordName
+	Add-Member -InputObject $_ -MemberType NoteProperty -Name MappedCNames -Value (($initial | Where-Object { $_.Type -eq 'CNAME' }).NameHost -join '; ')
+	Add-Member -InputObject $_ -MemberType NoteProperty -Name IPs -Value (($initial | Where-Object { $_.Type -ne 'CNAME' }).IPAddress -join '; ') -PassThru
+}
