@@ -17,27 +17,27 @@ $appMap = @{
 }
 
 foreach ($fileType in $FileTypes) {
-	$App = New-Object -ComObject "$($appMap[$fileType]).application"
-	$App.visible = $False
+	$app = New-Object -ComObject "$($appMap[$fileType]).application"
+	$app.visible = $False
 	Get-ChildItem -Path $SearchPath -File -Recurse | Where-Object { $_.Extension.TrimStart('.') -in $fileType } | ForEach-Object {
-		$document = ""
-		switch ($_.Extension.TrimStart('.')) {
+		$filename = $_.FullName
+		$document = switch ($_.Extension.TrimStart('.')) {
 			docx {
-				$document = $App.Documents.Open($_.FullName)
+				$app.Documents.Open($filename)
 			}
 			pptx {
-				$document = $App.Presentations.Open($_.FullName)
+				$app.Presentations.Open($filename)
 			}
 			xlsx {
-				$document = $App.Workbooks.Open($_.FullName)
+				$app.Workbooks.Open($filename)
 			}
 			Default {
-				Write-Information "File: $($_.FullName) does not have a valid extension"
+				Write-Information "File: $($filename) does not have a valid extension"
 				continue;
 			}
 		}
 		$document.Final = $true
 		$document.Close($true)
 	}
-	$App.Quit()
+	$app.Quit()
 }
