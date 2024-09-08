@@ -1,0 +1,14 @@
+[Unit]
+Description=Install ansible
+After=network-online.target
+Wants=network-online.target
+ConditionPathExists=!/usr/local/bin/ansible
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=rpm-ostree install -yA ansible-core git
+ExecStart=rpm-ostree ex apply-live
+
+[Install]
+WantedBy=multi-user.target
