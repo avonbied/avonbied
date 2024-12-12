@@ -1,0 +1,55 @@
+# yaml-language-server: $schema=https://aka.ms/configuration-dsc-schema/0.2
+properties:
+  configurationVersion: 0.2.0
+  assertions:
+    - resource: Microsoft.Windows.Developer/OsVersion
+      directives:
+        description: Verify min OS version requirement
+        allowPrerelease: true
+      settings:
+        MinVersion: '10.0.22000'
+  resources:
+    # Installs
+    - id: tfInstall
+      resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Terraform
+        allowPrerelease: true
+      settings:
+        id: Hashicorp.Terraform
+        source: winget
+    - id: pkrInstall
+      resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Packer
+        allowPrerelease: true
+      settings:
+        id: Hashicorp.Packer
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install VirtualBox
+        allowPrerelease: true
+      settings:
+        id: Oracle.VirtualBox
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install DockerCLI
+        allowPrerelease: true
+      settings:
+        id: Docker.DockerCLI
+        source: winget
+    # Add-ons
+    - resource: PSDscResources/Script
+      directives:
+        description: Install VSCode Extensions
+      dependsOn:
+        - tfInstall
+        - pkrInstall
+      settings:
+        SetScript: |
+          code --install-extension HashiCorp.terraform
+          code --install-extension HashiCorp.HCL
+        GetScript: return $false
+        TestScript: return $false
