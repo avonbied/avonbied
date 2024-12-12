@@ -1,0 +1,69 @@
+# yaml-language-server: $schema=https://aka.ms/configuration-dsc-schema/0.2
+properties:
+  configurationVersion: 0.2.0
+  assertions:
+    - resource: Microsoft.Windows.Developer/OsVersion
+      directives:
+        description: Verify min OS version requirement
+        allowPrerelease: true
+      settings:
+        MinVersion: '10.0.22000'
+  resources:
+    # Installs
+    - id: dockerInstall
+      resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Docker Desktop
+        allowPrerelease: true
+      settings:
+        id: Docker.DockerDesktop
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install GnuPG
+        allowPrerelease: true
+      settings:
+        id: GnuPG.Gpg4win
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Git
+        allowPrerelease: true
+      settings:
+        id: Microsoft.Git
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install GitHub CLI
+        allowPrerelease: true
+      settings:
+        id: GitHub.cli
+        source: winget
+    - id: ghInstall
+      resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install GitHub Desktop
+        allowPrerelease: true
+      settings:
+        id: GitHub.GitHubDesktop
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install DBeaver
+        allowPrerelease: true
+      settings:
+        id: dbeaver.dbeaver
+        source: winget
+    # Add-ons
+    - resource: PSDscResources/Script
+      directives:
+        description: Install VSCode Extensions
+      dependsOn:
+        - dockerInstall
+        - ghInstall
+      settings:
+        SetScript: |
+          code --install-extension ms-azuretools.vscode-docker
+          code --install-extension GitHub.vscode-pull-request-github
+        GetScript: return $false
+        TestScript: return $false
