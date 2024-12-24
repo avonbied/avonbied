@@ -1,0 +1,25 @@
+[wsl2]
+# Default is 1TB (1099511627776)
+defaultVhdSize=256GB
+
+# For WSLg apps
+guiApplications=true
+
+# For Docker/Podman hosting/networking
+localhostForwarding=true
+nestedVirtualization=true
+
+pageReporting=true
+
+# Resource Options
+# memory=4GB 
+# processors=2
+# swap=8GB	# default is 25% of available RAM
+# swapfile=%USERPROFILE%\AppData\Local\Temp\swap.vhdx
+
+# Debugging Options
+# safeMode=true
+# debugConsole=true
+
+[experimental]
+sparseVhd=false
