@@ -14,3 +14,5 @@ git filter-branch --commit-filter 'if { [ "$GIT_AUTHOR_NAME" = "$OLD_GIT_NAME" ]
 
 rm -Rf .git/refs/original
 git gc --aggressive --prune=now
+
+git pull; git merge --no-ff $feature -m "$commit"; git push
