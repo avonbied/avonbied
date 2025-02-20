@@ -1,3 +1,5 @@
+#!/bin/sh
+
 sudo apk add --no-cache libstdc++ coreutils
 
 # Download and install nvm:
