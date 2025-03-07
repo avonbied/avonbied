@@ -44,14 +44,15 @@ properties:
   - resource: PSDscResources/Script
     directives:
       description: Enable WSL & HyperV
+      securityContext: elevated
     settings:
       getScript: |
         $features = $('VirtualMachinePlatform', 'HypervisorPlatform', 'Microsoft-Hyper-V', 'Microsoft-Windows-Subsystem-Linux', 'Containers')
-        $output = $($features | Foreach-Object { dism.exe /online /get-featureinfo /featurename:$_ }
+        $output = $($features | Foreach-Object { dism.exe /online /get-featureinfo /featurename:$_ })
         return ($output -match 'State : *')
       testScript: |
         $features = $('VirtualMachinePlatform', 'HypervisorPlatform', 'Microsoft-Hyper-V', 'Microsoft-Windows-Subsystem-Linux', 'Containers')
-        $output = $($features | Foreach-Object { dism.exe /online /get-featureinfo /featurename:$_ }
+        $output = $($features | Foreach-Object { dism.exe /online /get-featureinfo /featurename:$_ })
         return (($output -match 'State : Enabled').length -eq $features.length)
       setScript: |
         $features = $('VirtualMachinePlatform', 'HypervisorPlatform', 'Microsoft-Hyper-V', 'Microsoft-Windows-Subsystem-Linux', 'Containers')
