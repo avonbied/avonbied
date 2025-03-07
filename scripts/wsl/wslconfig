@@ -1,6 +1,6 @@
 [wsl2]
 # Default is 1TB (1099511627776)
-defaultVhdSize=256GB
+defaultVhdSize=128GB
 
 # For WSLg apps
 guiApplications=true
