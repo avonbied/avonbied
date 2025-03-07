@@ -11,36 +11,51 @@ properties:
 
   resources:
   # Configure Features
-  - resource: PSDscResources/WindowsOptionalFeature
+  # - resource: PSDscResources/WindowsOptionalFeature
+  #   directives:
+  #     securityContext: elevated
+  #   settings:
+  #     name: VirtualMachinePlatform
+  #     ensure: Present
+  # - resource: PSDscResources/WindowsOptionalFeature
+  #   directives:
+  #     securityContext: elevated
+  #   settings:
+  #     name: HypervisorPlatform
+  #     ensure: Present
+  # - resource: PSDscResources/WindowsOptionalFeature
+  #   directives:
+  #     securityContext: elevated
+  #   settings:
+  #     name: Microsoft-Hyper-V
+  #     ensure: Present
+  # - resource: PSDscResources/WindowsOptionalFeature
+  #   directives:
+  #     securityContext: elevated
+  #   settings:
+  #     name: Microsoft-Windows-Subsystem-Linux
+  #     ensure: Present
+  # - resource: PSDscResources/WindowsOptionalFeature
+  #   directives:
+  #     securityContext: elevated
+  #   settings:
+  #     name: Containers
+  #     ensure: Present
+  - resource: PSDscResources/Script
     directives:
-      securityContext: elevated
+      description: Enable WSL & HyperV
     settings:
-      name: VirtualMachinePlatform
-      ensure: Present
-  - resource: PSDscResources/WindowsOptionalFeature
-    directives:
-      securityContext: elevated
-    settings:
-      name: HypervisorPlatform
-      ensure: Present
-  - resource: PSDscResources/WindowsOptionalFeature
-    directives:
-      securityContext: elevated
-    settings:
-      name: Microsoft-Hyper-V
-      ensure: Present
-  - resource: PSDscResources/WindowsOptionalFeature
-    directives:
-      securityContext: elevated
-    settings:
-      name: Microsoft-Windows-Subsystem-Linux
-      ensure: Present
-  - resource: PSDscResources/WindowsOptionalFeature
-    directives:
-      securityContext: elevated
-    settings:
-      name: Containers
-      ensure: Present
+      getScript: |
+        $features = $('VirtualMachinePlatform', 'HypervisorPlatform', 'Microsoft-Hyper-V', 'Microsoft-Windows-Subsystem-Linux', 'Containers')
+        $output = $($features | Foreach-Object { dism.exe /online /get-featureinfo /featurename:$_ }
+        return ($output -match 'State : *')
+      testScript: |
+        $features = $('VirtualMachinePlatform', 'HypervisorPlatform', 'Microsoft-Hyper-V', 'Microsoft-Windows-Subsystem-Linux', 'Containers')
+        $output = $($features | Foreach-Object { dism.exe /online /get-featureinfo /featurename:$_ }
+        return (($output -match 'State : Enabled').length -eq $features.length)
+      setScript: |
+        $features = $('VirtualMachinePlatform', 'HypervisorPlatform', 'Microsoft-Hyper-V', 'Microsoft-Windows-Subsystem-Linux', 'Containers')
+        $features | Foreach-Object { dism.exe /online /enable-feature /featurename:$_ /all /norestart }
 
   # Required Packages
   - resource: Microsoft.WinGet.DSC/WinGetPackage
