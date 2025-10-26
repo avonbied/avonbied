@@ -9,7 +9,7 @@ guiApplications=true
 localhostForwarding=true
 nestedVirtualization=true
 
-pageReporting=true
+# pageReporting=true
 
 # Resource Options
 # memory=4GB 
