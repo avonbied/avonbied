@@ -99,13 +99,13 @@ properties:
         }
       testScript: |
         return @(
-          ('core.editor', "\"$(@(where.exe code)[0] -ireplace '\\','\\')\""),
+          ('core.editor', "`"$(@(where.exe code)[0] -ireplace '\\','\\')`""),
           ('gpg.program', "$(@(where.exe gpg)[0] -ireplace '\\','/' -ireplace '( |\(|\))','\$0')"),
           ('core.sshCommand', "$(@(where.exe ssh)[0])")
         ) | Foreach-Object { $result = $true } { $result = $result -and ((git config --system $_[0]) -eq $_[1]) } { $result }
       setScript: |
         @(
-          ('core.editor', "\"$(@(where.exe code)[0] -ireplace '\\','\\')\""),
+          ('core.editor', "`"$(@(where.exe code)[0] -ireplace '\\','\\')`""),
           ('gpg.program', "$(@(where.exe gpg)[0] -ireplace '\\','/' -ireplace '( |\(|\))','\$0')"),
           ('core.sshCommand', "$(@(where.exe ssh)[0])")
         ) | Foreach-Object { git config --system $_ }
@@ -151,11 +151,11 @@ properties:
       getScript: |
         $WSL_NAME="default"
         $WSL_USER="$env:USERNAME"
-        return @{ result = "$(((wsl.exe -d $WSL_NAME -u root ('cat /etc/passwd | grep -i $WSL_USER' -split ' ')) -like "*$WSL_USER*") ? $WSL_USER : $null)" }
+        return @{ result = "$(((wsl.exe -d $WSL_NAME -u root ("cat /etc/passwd | grep -i $WSL_USER" -split ' ')) -like "*$WSL_USER*") ? $WSL_USER : $null)" }
       testScript: |
         $WSL_NAME="default"
         $WSL_USER="$env:USERNAME"
-        return ((wsl.exe -d $WSL_NAME -u root ('cat /etc/passwd | grep -i $WSL_USER' -split ' ')) -like "*$WSL_USER*")
+        return ((wsl.exe -d $WSL_NAME -u root ("cat /etc/passwd | grep -i $WSL_USER" -split ' ')) -like "*$WSL_USER*")
       setScript: |
         $WSL_NAME="default"
         $WSL_USER="$env:USERNAME"
