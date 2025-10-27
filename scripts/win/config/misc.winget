@@ -40,6 +40,41 @@ properties:
       settings:
         id: Docker.DockerCLI
         source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install PowerBI
+        allowPrerelease: true
+      settings:
+        id: Microsoft.PowerBI
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install PowerBI Reports
+        allowPrerelease: true
+      settings:
+        id: MicrosoftCorporation.PowerBIReportBuilder
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install PuTTY
+        allowPrerelease: true
+      settings:
+        id: PuTTY.PuTTY
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install WinSCP
+        allowPrerelease: true
+      settings:
+        id: WinSCP.WinSCP
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Draw.io
+        allowPrerelease: true
+      settings:
+        id: JGraph.Draw
+        source: winget
     # Add-ons
     - resource: PSDscResources/Script
       directives:
