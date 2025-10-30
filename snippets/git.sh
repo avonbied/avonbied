@@ -16,3 +16,9 @@ rm -Rf .git/refs/original
 git gc --aggressive --prune=now
 
 git pull; git merge --no-ff $feature -m "$commit"; git push
+
+# Get Branches with deleted remotes
+git fetch -p #;
+git branch --v \
+## OR ## git for-each-ref --format '%(refname:short) %(upstream:track)' refs/heads
+| grep -i '\[gone\]'
