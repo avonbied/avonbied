@@ -5,12 +5,12 @@ adduser -G wheel -s /bin/bash $1
 echo -e "$1 ALL=(ALL:ALL) ALL" >> /etc/sudoers.d/admins
 echo -e "[user]\ndefault=$1" >> /etc/wsl.conf
 
-# Create Bash Profile
-mkdir "/home/$1/.bash"
+# Create Config
+curl -o- https://raw.githubusercontent.com/avonbied/avonbied/refs/heads/main/scripts/unix/profile-config.sh
 
 # .profile
-echo -e "if [ -f ~/.bash/bashrc ]; then
-	source ~/.bash/bashrc
+echo -e "if [ -L ~/.bashrc ]; then
+	source ~/.bashrc
 fi
 # export GPG_TTY=\$(tty)" >> "/home/$1/.profile"
 
