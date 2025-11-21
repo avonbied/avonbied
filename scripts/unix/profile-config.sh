@@ -11,14 +11,14 @@ config_name='s/^.bash_profile\$/.profile/g;s/^.(bash|git)[_]*//g'
 
 # config_len=${#config_arr[@]}
 for i in "${!config_arr[@]}"; do
-	$new_file="${echo $config_arr[$i] | sed $config_dest}/${echo $config_arr[$i] | sed $config_name}"
-	if [ !-L "~/${$config_arr[$i]}" ]; then
+	$new_file="$(echo $config_arr[$i] | sed $config_dest)/$(echo $config_arr[$i] | sed $config_name)"
+	if [ ! -L "~/${$config_arr[$i]}" ]; then
 		mv "~/{$config_arr[$i]}" "~/$new_file"
 	else
 		rm "~/{$config_arr[$i]}"
 		ln -s "~/$new_file" "~/{$config_arr[$i]}"
 	fi
-	if [ !-f "~/$new_file" ]; then
+	if [ ! -f "~/$new_file" ]; then
 		touch "~/$new_file"
 	fi
 done
