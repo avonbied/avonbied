@@ -47,5 +47,21 @@
 			"\t# Insert code here\n$0",
 			"} else := ${4:fail_output}"
 		]
+	},
+	"Metadata": {
+		"scope": "rego",
+		"prefix": "metadata",
+		"description": "Rego metadata annotations",
+		"body": [
+			"# METADATA",
+			"# scope: ${1|rule,document,package,subpackages|}",
+			"# title: $2",
+			"# description: $3",
+			"# related_resources:\n#  - ref: https://example.com\n#    description: Example description",
+			"# authors:\n#  - name: John Doe\n#    email: john@example.com",
+			"# organizations: [\"org\"]",
+			"# schemas:\n#  - schema_name: schema_value",
+			"# entrypoint: ${4|false,true|}\n$0"
+		]
 	}
 }
