@@ -11,7 +11,7 @@ $vm = Get-AzVM -ResourceGroupName $ResourceGroupName -Name $VmName
 #Please check out the availability of ZRS here: https://docs.microsoft.com/en-us/Az.Storage/common/storage-redundancy-zrs#support-coverage-and-regional-availability
 $snapshotConfig = New-AzSnapshotConfig -SourceUri $vm.StorageProfile.OsDisk.ManagedDisk.Id `
 	-Location ($deployToSameRegion ? $vm.Location : $TargetLocation) `
-	-CreateOption 'CopyStart' -SkuName 'Standard_LRS' -Incremental
+	-CreateOption 'Copy' -SkuName 'Standard_LRS' -Incremental
 
 if ($deployToSameRegion) {
 	$tempSnapshot = New-AzSnapshot -SnapshotName "TEMP_$($VmName)-SNAPSHOT" -ResourceGroupName $ResourceGroupName -Snapshot $snapshotConfig
