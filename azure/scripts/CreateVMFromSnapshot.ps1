@@ -1,3 +1,34 @@
+[CmdletBinding()]
+param (
+	[Parameter(Mandatory = $true)]
+	[ValidatePattern('\w{1,}\.\w{1,}\.?[\w.]*')]
+	[String]$VmName,
+	[ValidateSet('Standard_F2s')]
+	[String]$VmSize,
+	[bool]$Exportable,
+	[ValidateSet('Microsoft RSA SChannel Cryptographic Provider', 'Microsoft Enhanced DSS and Diffie-Hellman Cryptographic Provider')]
+	[string]$Encryption = 'Microsoft RSA SChannel Cryptographic Provider',
+	[Parameter(Mandatory = $true)]
+	[String]$Destination
+)
+
+$VmName = ""
+$VmSize = ""
+
+$vm = Get-AzVM -ResourceGroupName $TargetResourceGroup -Name $VmName -ErrorAction SilentlyContinue
+if (!$vm) {
+	$vmConfig = New-AzVMConfig -VMName $VmName -VMSize $VmSize
+	
+	
+	$nic = "NIC-$VmName"
+	
+	$ip = Get-AzNetworkInterface -Name $nic -ResourceGroupName $TargetResourceGroup -ErrorAction SilentlyContinue
+	if (!$ip) {
+		$ip = New-AzNetworkInterface -Name $nic -Location $Location -ResourceGroupName $TargetResourceGroup -NetworkSecurityGroup $Nsg -Subnet $subnet
+	}
+
+}
+
 #Provide the subscription Id
 $subscriptionId = 'yourSubscriptionId'
 
@@ -42,9 +73,6 @@ $publicIp = New-AzPublicIpAddress -Name ($VirtualMachineName.ToLower()+'_ip') -R
 
 #Get the virtual network where virtual machine will be hosted
 $vnet = Get-AzVirtualNetwork -Name $virtualNetworkName -ResourceGroupName $resourceGroupName
-
-# Create NIC in the first subnet of the virtual network
-$nic = New-AzNetworkInterface -Name ($VirtualMachineName.ToLower()+'_nic') -ResourceGroupName $resourceGroupName -Location $snapshot.Location -SubnetId $vnet.Subnets[0].Id -PublicIpAddressId $publicIp.Id
 
 $VirtualMachine = Add-AzVMNetworkInterface -VM $VirtualMachine -Id $nic.Id
 
