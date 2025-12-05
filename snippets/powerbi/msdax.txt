@@ -1,0 +1,10 @@
+
+
+// Generate a Paginated Report URL that carries slicer values from a standard Power BI report
+PaginatedURL = 
+	VAR baseurl = "https://app.powerbi.com/groups/<groupid>/rdlreports/<reportid>?"
+	// For multi-select Slicers
+	VAR param1 = "rp:param1="&CONCATENATEX(VALUES('Table'[Column]),[Column],",")
+	// For single-select Slicers
+	VAR param2 = "rp:param2="&SELECTEDVALUE('Table'[Column])
+RETURN baseurl&COMBINEVALUES("&", param1, param2)
