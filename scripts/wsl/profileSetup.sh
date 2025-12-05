@@ -23,7 +23,7 @@ if [ -f ~/.bash/bashrc ]; then
 fi
 EOF
 )
-sudo -u $1 echo "$bash_profile" >> ~/.bash_profile
+sudo -u $1 echo "$bash_profile" >> "/home/$1/.bash_profile"
 
 # .bash/bashrc
 bashrc=$(cat<<EOF
@@ -37,4 +37,5 @@ fi
 export PS1='\[\033[01;32m\]\u@\h\[\033[01;34m\] \w\[\033[01;32m\]$(__git_ps1)\[\033[01;34m\] \$\[\033[34m\] '
 EOF
 )
-sudo -u $1 echo "$bashrc" >> ~/.bash/bashrc
+sudo -u $1 echo "$bashrc" >> "/home/$1/.bash/bashrc"
+sudo -u $1 touch "/home/$1/.profile"
