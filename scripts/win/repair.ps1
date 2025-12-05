@@ -103,3 +103,14 @@ icacls wlidsvcconfig.xml /setowner "nt authority\system"
 # Everyone:(I)(RX)
 icacls wlidsvcconfig.xml
 net start wlidsvc
+
+# Fix Windows Search 
+net stop 
+Get-BitsTransfer -AllUsers | Where-Object {$_.JobState -eq 'Transferred' } | ForEach-Object { Remove-BitsTransfer $_ }
+rm -Recurse -Force "$env:LOCALAPPDATA\Packages\Microsoft.BingSearch_8wekyb3d8bbwe"
+Remove-Item -Recurse -Force "$env:PROGRAMDATA\Microsoft\Search"
+PS C:\ProgramData\Microsoft> $ACL = Get-Acl "$env:PROGRAMDATA\Microsoft"
+PS C:\ProgramData\Microsoft> $ACL.SetAccessRuleProtection($false, $true)
+PS C:\ProgramData\Microsoft> Set-Acl -Path "$env:PROGRAMDATA\Microsoft" -AclObject $ACL
+Remove-Item -Path HKCUL:\Software\Microsoft\Windows\CurrentVersion\Search
+net start wsearch
