@@ -28,5 +28,24 @@
 			"}",
 			"count(invalid_values) == 0\n$0"
 		]
+	},
+	"Function (Basic)": {
+		"scope": "rego",
+		"prefix": "function-basic",
+		"description": "Pattern for a boolean check function with output",
+		"body": [
+			"default ${1:func}(_) := ${2:fail_output}",
+			"$1(${3:\"good_value\"}) := ${4:pass_output}\n$0"
+		]
+	},
+	"Function (Advanced)": {
+		"scope": "rego",
+		"prefix": "function-advanced",
+		"description": "Pattern for an advanced function",
+		"body": [
+			"${1:func}(${2:input}) := ${3:pass_output} if {",
+			"\t# Insert code here\n$0",
+			"} else := ${4:fail_output}"
+		]
 	}
 }
