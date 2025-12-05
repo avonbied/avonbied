@@ -17,6 +17,7 @@ git config --system tag.gpgSign true
 git config --system gpg.program '/mnt/c/Program Files (x86)/GnuPG/bin/gpg.exe'
 git config --system credential.helper '/mnt/c/Program\ Files/Git/mingw64/bin/git-credential-manager.exe'
 
+mkdir -p "/run/user/$(id -u root)"
 # GPG & GCM Config (Local)
 # apk add gpg && git config --system gpg.program "$(which gpg)"
 # git config --system credential.credentialStore gpg

@@ -23,3 +23,6 @@ fi
 export PS1='\[\033[01;32m\]\u@\h\[\033[01;34m\] \w\[\033[01;32m\]\$(__git_ps1)\[\033[01;34m\] \\\$\[\033[34m\] '" >> "/home/$1/.bash/bashrc"
 
 chown -R $1 "/home/$1"
+
+mkdir -p "/run/user/$(id -u $1)"
+chown -R $1 "/run/user/$(id -u $1)"
