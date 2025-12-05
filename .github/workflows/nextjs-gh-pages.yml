@@ -8,9 +8,9 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     permissions:
-    contents: write
+      contents: write
     concurrency:
-    group: ${{ github.workflow }}-${{ github.ref }}
+      group: ${{ github.workflow }}-${{ github.ref }}
     steps:
     - uses: actions/checkout@v3
 
