@@ -14,6 +14,11 @@ echo -e "[boot]\nsystemd=true\n\n[automount]\nenabled=true\nmountFsTab=true\nroo
 # Add PATH for Interop
 sed -i 's/\(^export PATH="\)/\1\$PATH:/' /etc/profile
 
+# GPG & GCM Config
+git config --system commit.gpgsign true
+git config --system tag.gpgSign true
+git config --system credential.helper '/mnt/c/Program\ Files\ \(x86\)/Git\ Credential\ Manager/git-credential-manager.exe'
+
 # Create Bash Profile
 sudo -u $1 mkdir ~/.bash
 
