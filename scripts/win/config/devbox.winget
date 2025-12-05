@@ -9,28 +9,58 @@ properties:
       settings:
         MinVersion: '10.0.22000'
   resources:
-    # Installs
-    - id: dockerInstall
+    # Windows Settings
+    - resource: Microsoft.Windows.Developer/WindowsExplorer
+      directives:
+        description: Modify Explorer Settings
+        allowPrerelease: true
+      settings:
+        FileExtensions: Show
+        HiddenFiles: Show
+        RestartExplorer: True
+    # Tool Installations
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install PowerShell
+        allowPrerelease: true
+      settings:
+        id: Microsoft.PowerShell
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Windows Terminal
+        allowPrerelease: true
+      settings:
+        id: Microsoft.WindowsTerminal
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install 7zip
+        allowPrerelease: true
+      settings:
+        id: 7zip.7zip
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install VS Code
+        securityContext: elevated
+      settings:
+        id: Microsoft.VisualStudioCode
+        source: winget
+    - id: podmanInstall
       resource: Microsoft.WinGet.DSC/WinGetPackage
       directives:
-        description: Install Docker Desktop
+        description: Install Podman
         allowPrerelease: true
       settings:
-        id: Docker.DockerDesktop
+        id: RedHat.Podman
         source: winget
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       directives:
-        description: Install GnuPG
+        description: Install Podman Desktop
         allowPrerelease: true
       settings:
-        id: GnuPG.Gpg4win
-        source: winget
-    - resource: Microsoft.WinGet.DSC/WinGetPackage
-      directives:
-        description: Install Git
-        allowPrerelease: true
-      settings:
-        id: Microsoft.Git
+        id: RedHat.Podman-Desktop
         source: winget
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       directives:
@@ -59,11 +89,15 @@ properties:
       directives:
         description: Install VSCode Extensions
       dependsOn:
-        - dockerInstall
+        - podmanInstall
         - ghInstall
       settings:
         SetScript: |
-          code --install-extension ms-azuretools.vscode-docker
+          code --install-extension ms-azuretools.vscode-containers
+          code --install-extension ms-vsliveshare.vsliveshare
+          code --install-extension ms-vscode-remote.vscode-remote-extensionpack
           code --install-extension GitHub.vscode-pull-request-github
+          code --install-extension vscode-icons-team.vscode-icons
+          code --install-extension VisualStudioExptTeam.vscodeintellicode
         GetScript: return $false
         TestScript: return $false
