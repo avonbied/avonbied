@@ -1,0 +1,66 @@
+# yaml-language-server: $schema=https://aka.ms/configuration-dsc-schema/0.2
+properties:
+  configurationVersion: 0.2.0
+  resources:
+    - resource: Microsoft.Windows.Developer/WindowsExplorer
+      directives:
+        description: Modify Windows Explorer settings
+        allowPrerelease: true
+      settings:
+        FileExtensions: Show
+        HiddenFiles: Show
+        RestartExplorer: True
+    - resource: Microsoft.Windows/WindowsFeature
+      directives:
+        description: Enable WSL Feature
+        allowPrerelease: true
+      settings:
+        name: Windows Subsystem for Linux
+        ensure: present
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Windows Terminal
+        allowPrerelease: true
+      settings:
+        id: Microsoft.WindowsTerminal
+        source: winget
+        scope: machine
+        ensure: present
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install PowerShell 7+
+        allowPrerelease: true
+      settings:
+        id: Microsoft.PowerShell
+        source: winget
+        scope: machine
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Windows Subsystem for Linux
+        allowPrerelease: true
+      settings:
+        id: Microsoft.WSL
+        source: winget
+        scope: machine
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Windows Microsoft DevHome
+        allowPrerelease: true
+      settings:
+        id: Microsoft.WSLMicrosoft.DevHome
+        source: winget
+        scope: machine
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install VS Code
+        allowPrerelease: true
+      settings:
+        id: Microsoft.VisualStudioCode
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install 7Zip
+        allowPrerelease: true
+      settings:
+        id: 7zip.7zip
+        source: winget
