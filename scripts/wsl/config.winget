@@ -126,7 +126,7 @@ properties:
         curl -so $WSL_CONFIG $REMOTE_FILE
   - resource: PSDscResources/Script
     directives:
-      description: Configure WSL profile
+      description: Configure Custom WSL profile
     settings:
       getScript: |
         $WSL_NAME="default"
