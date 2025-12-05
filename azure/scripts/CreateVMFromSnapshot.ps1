@@ -1,23 +1,22 @@
 [CmdletBinding()]
 param (
 	[Parameter(Mandatory = $true)]
-	[ValidatePattern('\w{1,}\.\w{1,}\.?[\w.]*')]
+	[ValidatePattern('[a-zA-Z0-9_\-\.]+')]
 	[String]$VmName,
-	[ValidateSet('Standard_F2s')]
+	[ValidateSet('Standard_F2s_v2', 'Standard_F4s_v2', 'Standard_F8s_v2')]
 	[String]$VmSize,
-	[bool]$Exportable,
-	[ValidateSet('Microsoft RSA SChannel Cryptographic Provider', 'Microsoft Enhanced DSS and Diffie-Hellman Cryptographic Provider')]
-	[string]$Encryption = 'Microsoft RSA SChannel Cryptographic Provider',
+	[ValidateSet('Linux', 'Windows')]
+	[string]$OsType = 'Linux',
 	[Parameter(Mandatory = $true)]
-	[String]$Destination
+	[String]$Destination,
+	[switch]$Public
 )
 
-$VmName = ""
-$VmSize = ""
 
-$vm = Get-AzVM -ResourceGroupName $TargetResourceGroup -Name $VmName -ErrorAction SilentlyContinue
-if (!$vm) {
+$vm = Get-AzVM -ResourceGroupName $TargetResourceGroup -Name $VmName -ErrorAction SilentlyContinue -ErrorVariable vmNotFound
+if ($vmNotFound) {
 	$vmConfig = New-AzVMConfig -VMName $VmName -VMSize $VmSize
+	$diskConfig = New-AzDiskConfig -Location $snapshot.Location -HyperVGeneration V2
 	
 	
 	$nic = "NIC-$VmName"
@@ -29,8 +28,6 @@ if (!$vm) {
 
 }
 
-#Provide the subscription Id
-$subscriptionId = 'yourSubscriptionId'
 
 #Provide the name of your resource group
 $resourceGroupName ='yourResourceGroupName'
@@ -53,9 +50,6 @@ $virtualMachineName = 'yourVMName'
 #e.g. Get-AzVMSize -Location westus
 $virtualMachineSize = 'Standard_DS3'
 
-#Set the context to the subscription Id where Managed Disk will be created
-Select-AzSubscription -SubscriptionId $SubscriptionId
-
 $snapshot = Get-AzSnapshot -ResourceGroupName $resourceGroupName -SnapshotName $snapshotName
 
 $diskConfig = New-AzDiskConfig -Location $snapshot.Location -SourceResourceId $snapshot.Id -CreateOption Copy
@@ -69,7 +63,9 @@ $VirtualMachine = New-AzVMConfig -VMName $virtualMachineName -VMSize $virtualMac
 $VirtualMachine = Set-AzVMOSDisk -VM $VirtualMachine -ManagedDiskId $disk.Id -CreateOption Attach -Windows
 
 #Create a public IP for the VM
-$publicIp = New-AzPublicIpAddress -Name ($VirtualMachineName.ToLower()+'_ip') -ResourceGroupName $resourceGroupName -Location $snapshot.Location -AllocationMethod Dynamic
+if ($Public.IsPresent) {
+	$publicIp = New-AzPublicIpAddress -Name "PIP-$($VirtualMachineName)" -ResourceGroupName $resourceGroupName -Location $snapshot.Location -AllocationMethod Dynamic
+}
 
 #Get the virtual network where virtual machine will be hosted
 $vnet = Get-AzVirtualNetwork -Name $virtualNetworkName -ResourceGroupName $resourceGroupName
@@ -77,4 +73,4 @@ $vnet = Get-AzVirtualNetwork -Name $virtualNetworkName -ResourceGroupName $resou
 $VirtualMachine = Add-AzVMNetworkInterface -VM $VirtualMachine -Id $nic.Id
 
 #Create the virtual machine with Managed Disk
-New-AzVM -VM $VirtualMachine -ResourceGroupName $resourceGroupName -Location $snapshot.Location
+Return New-AzVM -VM $VirtualMachine -ResourceGroupName $resourceGroupName -Location $snapshot.Location
