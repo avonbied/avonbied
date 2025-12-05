@@ -1,6 +1,8 @@
+// Count the number of filter non-blank values
+COUNTAX(FILTER('Table', [FilterColumn] IN {"Value1", "Value2"}), [CountColumn]) // Separate filter & count columns
+SUMX(Table, INT([FilterColumn] IN {"Value1", "Value2"})) // Same filter & count column
 
-
-// Generate a Paginated Report URL that carries slicer values from a standard Power BI report
+// Generate a Paginated Report URL that carries slicer values from a standard Power BI Report
 PaginatedURL = 
 	VAR baseurl = "https://app.powerbi.com/groups/<groupid>/rdlreports/<reportid>?"
 	// For multi-select Slicers
@@ -8,3 +10,9 @@ PaginatedURL =
 	// For single-select Slicers
 	VAR param2 = "rp:param2="&SELECTEDVALUE('Table'[Column])
 RETURN baseurl&COMBINEVALUES("&", param1, param2)
+
+// Filterable Dataset for Paginated Report parameters
+EVALUATE SUMMARIZECOLUMNS(
+	'Table'[Column],
+	RSCustomDaxFilter(@QueryParam, EqualToCondition, [Table].[FilterColumn], String)
+)
