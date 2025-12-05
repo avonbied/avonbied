@@ -1,6 +1,15 @@
-$ResourceGroupName = Read-Host -Prompt 'Resource Group: '
-$VmName = Read-Host -Prompt 'VM Name: '
-$TargetLocation = (Read-Host -Prompt 'Location ')
+[CmdletBinding()]
+param (
+	[Parameter(Mandatory = $true)]
+	[ValidatePattern('[a-zA-Z0-9_\-\.]+')]
+	[string]$ResourceGroupName,
+	[Parameter(Mandatory = $true)]
+	[ValidatePattern('[a-zA-Z0-9_\-\.]+')]
+	[string]$VmName,
+	[Parameter(Mandatory = $true)]
+	[ValidateNotNullOrEmpty()]
+	[string]$TargetLocation
+)
 
 ### Variables
 [string]$snapshotName = "$($VmName)_OSSnapshot-$(Get-Date -AsUTC -Format "yyyyMMdd_HHmmss")"
