@@ -9,6 +9,9 @@ adduser -G wheel -s /bin/bash $1
 echo -e "$1 ALL=(ALL:ALL) ALL" >> /etc/sudoers.d/admins
 echo -e "[boot]\nsystemd=true\n\n[automount]\nenabled=true\nmountFsTab=true\nroot=/mnt/\n\n[interop]\nenabled=true\nappendWindowsPath=true\n\n[user]\ndefault=$1" >> /etc/wsl.conf
 
+# Add PATH for Interop
+sed -i 's/\(^export PATH="\)/\1\$PATH:/' /etc/profile
+
 # Create Bash Profile
 sudo -u $1 mkdir ~/.bash
 
@@ -29,4 +32,4 @@ export PS1='\[\033[01;32m\]\u@\h\[\033[01;34m\] \w\[\033[01;32m\]$(__git_ps1)\[\
 EOF
 )
 sudo -u $1 echo -e "$bashrc" >> "/home/$1/.bash/bashrc"
-sudo -u $1 touch "/home/$1/.profile"
+sudo -u $1 echo 'export GPG_TTY=$(tty)' "/home/$1/.profile"
