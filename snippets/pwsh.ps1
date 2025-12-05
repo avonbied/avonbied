@@ -8,4 +8,4 @@ Get-CimInstance Win32_Product | Sort-Object Name | Export-Csv -Path "$env:COMPUT
 Select-String -Path $file -Pattern $pattern
 
 # Output all running/stopped services
-Get-Service | Select-Object -Property Name, DisplayName, Status, ServiceType, @{l='DependentServices';e={[string]::join(';',($_.MemberOf))}}, @{l='ServicesDependedOn';e={[string]::join(';',($_.MemberOf))}} | -Path "$env:COMPUTERNAME.csv"
+Get-Service | Select-Object -Property Name, DisplayName, Status, ServiceType, @{l='DependentServices';e={[string]::join(';',($_.DependentServices.Name))}}, @{l='ServicesDependedOn';e={[string]::join(';',($_.ServicesDependedOn.Name))}} | -Path "$env:COMPUTERNAME.csv"
