@@ -141,7 +141,7 @@ properties:
         $WSL_DIR="$env:USERPROFILE\wsl\$WSL_NAME"
         $WSL_IMAGE="$WSL_DIR\alpine-3.21.tar.gz"
         New-item -Type Directory $WSL_DIR
-        curl -so $WSL_IMAGE https://dl-cdn.alpinelinux.org/alpine/v3.21/releases/x86_64/alpine-minirootfs-3.21.3-x86_64.tar.gz
+        curl -so $WSL_IMAGE https://dl-cdn.alpinelinux.org/alpine/v3.22/releases/x86_64/alpine-minirootfs-3.22.2-x86_64.tar.gz
         wsl.exe --import $WSL_NAME $WSL_DIR $WSL_IMAGE
         Remove-Item $WSL_IMAGE
   - resource: PSDscResources/Script
