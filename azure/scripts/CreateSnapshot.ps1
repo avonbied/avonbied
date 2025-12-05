@@ -3,7 +3,7 @@ $VmName = Read-Host -Prompt 'VM Name: '
 $TargetLocation = (Read-Host -Prompt 'Location ')
 
 ### Variables
-$snapshotName = "$($VmName)_OSSnapshot-$(Get-Date -AsUTC -Format "yyyyMMdd_HHmmss")"
+[string]$snapshotName = "$($VmName)_OSSnapshot-$(Get-Date -AsUTC -Format "yyyyMMdd_HHmmss")"
 $vm = Get-AzVM -ResourceGroupName $ResourceGroupName -Name $VmName
 [bool]$deployToSameRegion = $TargetLocation -eq $vm.Location
 
