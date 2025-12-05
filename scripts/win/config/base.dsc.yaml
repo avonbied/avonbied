@@ -55,13 +55,6 @@ properties:
         source: winget
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       directives:
-        description: Install DevHome
-        allowPrerelease: true
-      settings:
-        id: Microsoft.DevHome
-        source: winget
-    - resource: Microsoft.WinGet.DSC/WinGetPackage
-      directives:
         description: Install 7zip
         allowPrerelease: true
       settings:
