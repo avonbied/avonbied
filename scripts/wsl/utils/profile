@@ -1,0 +1,4 @@
+if [ -L ~/.bashrc ]; then
+	source ~/.bashrc
+fi
+# export GPG_TTY=$(tty)
