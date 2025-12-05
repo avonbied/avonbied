@@ -1,0 +1,8 @@
+#!/bin/sh
+
+PAM_DIR="/run/user/$(id -u $1)"
+
+if [ ! -d "$PAM_DIR" ]; then
+        sudo mkdir -p $PAM_DIR
+        sudo chown -R $1 $PAM_DIR
+fi
