@@ -1,0 +1,5 @@
+[Unit]
+Description=Perform Ansible pull from repository 
+
+[Service]
+ExecStart=xargs -a /etc/ansible.d/ansibled-pull.cfg ansible-pull

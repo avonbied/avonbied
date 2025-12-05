@@ -1,0 +1,45 @@
+variant: fcos
+version: 1.5.0
+passwd:
+  users:
+      # A user is required for Packer. This is a default sample
+    - name: core
+      password_hash: $y$j9T$wWOpthPCJoJG14flVcsic0$TuSXFTlrdTxEuWcLinzMYcLXMRSgjnCcaqaDM5u.lh5
+      # Add any users, ssh_keys, passwords required here
+systemd:
+  units:
+    - name: docker.socket
+      enabled: false
+      mask: true
+
+    - name: podman.socket
+      enabled: true
+
+    - name: init.service
+      enabled: true
+      contents_local: init-setup.service
+
+    - name: ansibled-pull.service
+      enabled: false
+      contents_local: config-pull.service
+
+    - name: ansibled-pull.timer
+      enabled: false
+      contents_local: config-pull.timer
+
+storage:
+  directories:
+    - path: /etc/ansible.d
+      mode: 0700
+  files:
+    - path: /etc/ansible.d/ansibled-pull.cfg
+      contents:
+        local: config-pull.cfg
+      mode: 0600
+    # Required if using SSH passwords
+    - path: /etc/ssh/sshd_config.d/20-enable-passwords.conf
+      mode: 0644
+      contents:
+        inline: |
+          # Fedora CoreOS disables SSH password login by default.
+          PasswordAuthentication yes
