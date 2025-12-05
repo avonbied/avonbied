@@ -21,8 +21,8 @@ jobs:
     - name: Set Workspace ENV_VAR
       id: set-wkdir
       run: |
-        echo "OLD_PATH=$GITHUB_WORKSPACE" >> $GITHUB_ENV
-        echo "GITHUB_WORKSPACE=$GITHUB_WORKSPACE/${{ inputs.app_dir }}" >> $GITHUB_ENV
+        echo "OLD_PATH=${{ GITHUB_WORKSPACE }}" >> $GITHUB_ENV
+        echo "GITHUB_WORKSPACE=${{ GITHUB_WORKSPACE }}/${{ inputs.app_dir }}" >> $GITHUB_ENV
 
     - name: Setup Node
       uses: actions/setup-node@v3
@@ -41,9 +41,15 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-yarn-
 
-    - run: yarn install --frozen-lockfile
-    - run: yarn build
-    - run: yarn export
+    - run: |
+        echo $(pwd)
+        yarn install --frozen-lockfile
+    - run: |
+        echo $(pwd)
+        yarn build
+    - run: |
+        echo $(pwd)
+        yarn export
 
     - name: Deploy
       uses: peaceiris/actions-gh-pages@v3
@@ -55,4 +61,4 @@ jobs:
 
     - name: Reset Workspace ENV_VAR
       id: reset-wkdir
-      run: echo "GITHUB_WORKSPACE=$OLD_PATH" >> $GITHUB_ENV
+      run: echo "GITHUB_WORKSPACE=${{ OLD_PATH }}" >> $GITHUB_ENV
