@@ -14,13 +14,13 @@ echo -e "if [ -L ~/.bashrc ]; then
 fi
 # export GPG_TTY=\$(tty)" >> "/home/$1/.profile"
 
-# .bash/bashrc
+# .bashrc
 echo -e "source /etc/bash/git-completion.bash
 source /etc/bash/git-prompt.sh
 if [ -f /etc/bash_completion ]; then
 	. /etc/bash_completion
 fi
-export PS1='\[\033[01;32m\]\u@\h\[\033[01;34m\] \w\[\033[01;32m\]\$(__git_ps1)\[\033[01;34m\] \\\$\[\033[34m\] '" >> "/home/$1/.bash/bashrc"
+export PS1='\[\033[01;32m\]\u@\h\[\033[01;34m\] \w\[\033[01;32m\]\$(__git_ps1)\[\033[01;34m\] \\\$\[\033[34m\] '" >> "/home/$1/.bashrc"
 
 chown -R $1 "/home/$1"
 
