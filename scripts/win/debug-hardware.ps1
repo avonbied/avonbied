@@ -43,15 +43,18 @@ param (
 $endTime = (Get-Date)
 $startTime = ($endTime).AddDays(-$LogDuration)
 
+$providers = @{
+	Hardware = @('Microsoft-Windows-Kernel-PnP', 'Microsoft-Windows-Kernel-WHEA', 'Microsoft-Windows-DriverFrameworks-UserMode', 'Microsoft-Windows-DriverFrameworks-KernelMode')
+}
+
 $filterMap = @{
 	LogName = 'System'
 	LogLevel = (1..3)
 	# Id = (1..20)
-	ProviderName = 'Microsoft-Windows-Kernel-PnP', 'Microsoft-Windows-Kernel-WHEA', 'Microsoft-Windows-DriverFrameworks-UserMode', 'Microsoft-Windows-DriverFrameworks-KernelMode'
+	ProviderName = $providers['Hardware']
 	StartTime = $startTime
 	EndTime = $endTime
 }
-
 
 function Get-DiskHealth {
 	Get-WmiObject -Namespace 'root\wmi' -Class MSStorageDriver_FailurePredictStatus
