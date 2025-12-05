@@ -16,3 +16,11 @@ $hostnames | ForEach-Object {
 	Add-Member -InputObject $_ -MemberType NoteProperty -Name MappedCNames -Value (($initial | Where-Object { $_.Type -eq 'CNAME' }).NameHost -join '; ')
 	Add-Member -InputObject $_ -MemberType NoteProperty -Name IPs -Value (($initial | Where-Object { $_.Type -ne 'CNAME' }).IPAddress -join '; ') -PassThru
 }
+
+# Parse HTML <a> hrefs
+$url = '{{url}}'
+Invoke-WebRequest -Uri $url -AllowInsecureRedirect
+| Select-Object Content | Select-String -Pattern 'href="(?<url>[a-zA-Z0-9./_-]+)"' -AllMatches
+| ForEach-Object { $_.Matches.Groups } # Select -ExpandProperty Matches | Select -ExpandProperty Groups
+| Where-Object { $_.Name -eq 'url' -and $_.Value -match '^{{protocol}}://{{domain}}' }
+| Select-Object Value
