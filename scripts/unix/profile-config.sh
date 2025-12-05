@@ -1,7 +1,7 @@
 #!/bin/sh
+
 config_dir='.config'
-mkdir -p "$config_dir"
-mkdir -p "$bash_dir"
+mkdir -p "$config_dir/{git,bash}"
 
 config_arr=('.bash_profile' '.bash_history' '.bash_logout' '.bashrc' '.gitconfig')
 # Expected mapping: .bash_profile -> ; .(bash|git)* -> .config/(bash|git)
@@ -25,8 +25,8 @@ done
 
 # Config git
 read -p 'Enter your Git username: ' input
-git config --global user.name $input
+git config set --global user.name $input
 read -p 'Enter your Git name: ' input
-git config --global user.name $input
+git config set --global user.name $input
 read -p 'Enter your Git email: ' input
-git config --global user.email $input
+git config set --global user.email $input
