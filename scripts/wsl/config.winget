@@ -83,3 +83,38 @@ properties:
     settings:
       id: Microsoft.VisualStudioCode
       source: winget
+
+  # Configurations
+  - resource: PSDscResources/Script
+    directives:
+      description: Create WSL Config
+    settings:
+      getScript: |
+        $WSL_CONFIG = "$env:USERPROFILE\.wslconfig"
+        return (Test-Path -Path $WSL_CONFIG) ? (Get-Content -Path $WSL_CONFIG -Raw) : $null
+      testScript: |
+        $WSL_CONFIG = "$env:USERPROFILE\.wslconfig"
+        $REMOTE_FILE = "https://raw.githubusercontent.com/avonbied/avonbied/refs/heads/main/scripts/wsl/wslconfig"
+        return ((Test-Path -Path $WSL_CONFIG) -and (curl -so- $REMOTE_FILE | Compare-Object (Get-Content $WSL_CONFIG)).Length -eq 0)
+      setScript: |
+        $WSL_CONFIG = "$env:USERPROFILE\.wslconfig"
+        $REMOTE_FILE = "https://raw.githubusercontent.com/avonbied/avonbied/refs/heads/main/scripts/wsl/wslconfig"
+        curl -o $WSL_CONFIG $REMOTE_FILE
+  - resource: PSDscResources/Script
+    directives:
+      description: Setup WSL profile
+    settings:
+      getScript: |
+        $WSL_NAME="default"
+        return ((wsl.exe -l -q) -like $WSL_NAME)).Length -gt 0 ? $WSL_NAME : $null 
+      testScript: |
+        $WSL_NAME="default"
+        $WSL_DIR="$env:USERPROFILE\wsl\$WSL_NAME"
+        return (((wsl.exe -l -q) -like $WSL_NAME)).Length -gt 0) -and (Test-Path -Path "$WSL_DIR\$WSL_NAME\ext4.vhdx") 
+      setScript: |
+        $WSL_NAME="default"
+        $WSL_DIR="$env:USERPROFILE\wsl\$WSL_NAME"
+        $WSL_IMAGE="$WSL_DIR\alpine-3.21.tar.gz"
+        New-item -Type Directory $WSL_DIR
+        curl -o $WSL_IMAGE https://dl-cdn.alpinelinux.org/alpine/v3.21/releases/x86_64/alpine-minirootfs-3.21.3-x86_64.tar.gz
+        wsl.exe --import $WSL_NAME $WSL_DIR $WSL_IMAGE
