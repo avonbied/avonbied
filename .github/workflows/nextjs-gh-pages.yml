@@ -2,11 +2,11 @@ name: Build NuxtJS GitHub Pages
 
 on:
   workflow_call:
-    secrets: inherit
+    # secrets: inherit
 
 jobs:
   deploy:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     permissions:
     contents: write
     concurrency:
