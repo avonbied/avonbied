@@ -18,14 +18,16 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
+    - name: Set Workspace ENV_VAR
+      id: set-wkdir
+      run: |
+        echo ::set-env name=OLD_PATH::"$GITHUB_WORKSPACE"
+        echo ::set-env name=GITHUB_WORKSPACE::"$OLD_PATH/${{ inputs.app_dir }}"
+
     - name: Setup Node
       uses: actions/setup-node@v3
       with:
         node-version: '14'
-
-    - name: Change to App Dir
-      id: cd-app
-      run: cd ${{ inputs.app_dir }}
 
     - name: Get yarn cache
       id: yarn-cache
@@ -50,3 +52,7 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ${{ inputs.app_dir }}/out
         force_orphan: true
+
+    - name: Reset Workspace ENV_VAR
+      id: reset-wkdir
+      run: echo ::set-env name=GITHUB_WORKSPACE::"$OLD_PATH"
