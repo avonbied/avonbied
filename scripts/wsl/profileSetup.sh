@@ -1,3 +1,5 @@
+#!/bin/sh
+
 # Create Initial Setup
 apk update
 apk add --no-cache curl wget bash sudo gnupg bash-completion git
