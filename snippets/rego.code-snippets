@@ -16,5 +16,17 @@
 			"invalid_values := {e | e := ${1:col}[_]; e ${2|!=,==|} ${3:true}}",
 			"count(invalid_values) == 0\n$0"
 		]
+	},
+	"Match All (preview)": {
+		"scope": "rego",
+		"prefix": "match_all",
+		"description": "Pattern for matching a value to all collection elements",
+		"body": [
+			"invalid_values contains value if {",
+			"\tsome value in ${1:col}",
+			"\tvalue ${2|!=,==|} ${3:true}",
+			"}",
+			"count(invalid_values) == 0\n$0"
+		]
 	}
 }
