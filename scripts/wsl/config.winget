@@ -49,7 +49,7 @@ properties:
       getScript: |
         $features = $('VirtualMachinePlatform', 'HypervisorPlatform', 'Microsoft-Hyper-V', 'Microsoft-Windows-Subsystem-Linux', 'Containers')
         $output = $($features | Foreach-Object { dism.exe /online /get-featureinfo /featurename:$_ })
-        return ($output -match 'State : *')
+        return @{ result = ($output -match 'State : *') }
       testScript: |
         $features = $('VirtualMachinePlatform', 'HypervisorPlatform', 'Microsoft-Hyper-V', 'Microsoft-Windows-Subsystem-Linux', 'Containers')
         $output = $($features | Foreach-Object { dism.exe /online /get-featureinfo /featurename:$_ })
@@ -62,6 +62,7 @@ properties:
   - resource: Microsoft.WinGet.DSC/WinGetPackage
     directives:
       description: Install PowerShell 7
+      securityContext: elevated
     settings:
       id: Microsoft.PowerShell
       source: winget
@@ -80,6 +81,7 @@ properties:
   - resource: Microsoft.WinGet.DSC/WinGetPackage
     directives:
       description: Install VS Code
+      securityContext: elevated
     settings:
       id: Microsoft.VisualStudioCode
       source: winget
@@ -87,11 +89,33 @@ properties:
   # Configurations
   - resource: PSDscResources/Script
     directives:
-      description: Create WSL Config
+      description: Configure Git
+      securityContext: elevated
+    settings:
+      getScript: |
+        return {
+          result = (@('core.editor', 'gpg.program', 'core.sshCommand') |
+          Foreach-Object { $result = "" } { $result += "$(_):$(git config --system $_); " } { $result })
+        }
+      testScript: |
+        return @(
+          ('core.editor', "\"$(@(which.exe code)[0] -ireplace '\\','\\')\""),
+          ('gpg.program', "$(@(where.exe gpg)[0] -ireplace '\\','/' -ireplace '( |\(|\))','\$0')"),
+          ('core.sshCommand', "$(@(where.exe ssh)[0])")
+        ) | Foreach-Object { $result = $true } { $result = $result -and ((git config --system $_[0]) -eq $_[1]) } { $result }
+      setScript: |
+        @(
+          ('core.editor', "\"$(@(which.exe code)[0] -ireplace '\\','\\')\""),
+          ('gpg.program', "$(@(where.exe gpg)[0] -ireplace '\\','/' -ireplace '( |\(|\))','\$0')"),
+          ('core.sshCommand', "$(@(where.exe ssh)[0])")
+        ) | Foreach-Object { git config --system $_ }
+  - resource: PSDscResources/Script
+    directives:
+      description: Configure WSL
     settings:
       getScript: |
         $WSL_CONFIG = "$env:USERPROFILE\.wslconfig"
-        return (Test-Path -Path $WSL_CONFIG) ? (Get-Content -Path $WSL_CONFIG -Raw) : $null
+        return @{ result = "$((Test-Path -Path $WSL_CONFIG) ? (Get-Content -Path $WSL_CONFIG -Raw) : $null)" }
       testScript: |
         $WSL_CONFIG = "$env:USERPROFILE\.wslconfig"
         $REMOTE_FILE = "https://raw.githubusercontent.com/avonbied/avonbied/refs/heads/main/scripts/wsl/wslconfig"
@@ -99,22 +123,41 @@ properties:
       setScript: |
         $WSL_CONFIG = "$env:USERPROFILE\.wslconfig"
         $REMOTE_FILE = "https://raw.githubusercontent.com/avonbied/avonbied/refs/heads/main/scripts/wsl/wslconfig"
-        curl -o $WSL_CONFIG $REMOTE_FILE
+        curl -so $WSL_CONFIG $REMOTE_FILE
   - resource: PSDscResources/Script
     directives:
-      description: Setup WSL profile
+      description: Configure WSL profile
     settings:
       getScript: |
         $WSL_NAME="default"
-        return ((wsl.exe -l -q) -like $WSL_NAME)).Length -gt 0 ? $WSL_NAME : $null 
+        return @{ result = "$(((wsl.exe -l -q) -like $WSL_NAME).Length -gt 0 ? $WSL_NAME : $null)" }
       testScript: |
         $WSL_NAME="default"
         $WSL_DIR="$env:USERPROFILE\wsl\$WSL_NAME"
-        return (((wsl.exe -l -q) -like $WSL_NAME)).Length -gt 0) -and (Test-Path -Path "$WSL_DIR\$WSL_NAME\ext4.vhdx") 
+        return (((wsl.exe -l -q) -like $WSL_NAME).Length -gt 0)
+      # -and (Test-Path -Path "$WSL_DIR\$WSL_NAME\ext4.vhdx")
       setScript: |
         $WSL_NAME="default"
         $WSL_DIR="$env:USERPROFILE\wsl\$WSL_NAME"
         $WSL_IMAGE="$WSL_DIR\alpine-3.21.tar.gz"
         New-item -Type Directory $WSL_DIR
-        curl -o $WSL_IMAGE https://dl-cdn.alpinelinux.org/alpine/v3.21/releases/x86_64/alpine-minirootfs-3.21.3-x86_64.tar.gz
+        curl -so $WSL_IMAGE https://dl-cdn.alpinelinux.org/alpine/v3.21/releases/x86_64/alpine-minirootfs-3.21.3-x86_64.tar.gz
         wsl.exe --import $WSL_NAME $WSL_DIR $WSL_IMAGE
+        Remove-Item $WSL_IMAGE
+  - resource: PSDscResources/Script
+    directives:
+      description: Configure WSL instance
+    settings:
+      getScript: |
+        $WSL_NAME="default"
+        $WSL_USER="$env:USERNAME"
+        return @{ result = "$(((wsl.exe -d $WSL_NAME -u root ('cat /etc/passwd | grep -i $WSL_USER' -split ' ')) -like "*$WSL_USER*") ? $WSL_USER : $null)" }
+      testScript: |
+        $WSL_NAME="default"
+        $WSL_USER="$env:USERNAME"
+        return ((wsl.exe -d $WSL_NAME -u root ('cat /etc/passwd | grep -i $WSL_USER' -split ' ')) -like "*$WSL_USER*")
+      setScript: |
+        $WSL_NAME="default"
+        $WSL_USER="$env:USERNAME"
+        curl -so- https://raw.githubusercontent.com/avonbied/avonbied/refs/heads/main/scripts/wsl/setupWsl.sh |  wsl -d $WSL_NAME -u root
+        curl -so- https://raw.githubusercontent.com/avonbied/avonbied/refs/heads/main/scripts/wsl/setupProfile.sh | wsl -d $WSL_NAME -u root /bin/sh -s $WSL_USER
