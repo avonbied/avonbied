@@ -1,0 +1,6 @@
+resourcecontainers
+| where type =~ 'microsoft.resources/subscriptions'
+| where tags.psl[tagName] =~ 'TAG_VALUE'
+| extend managementGroupParentId = coalesce(properties.managementGroupAncestorsChain[0], 'Unknown') 
+| project subscriptionId, name, managementGroupParentId, tags
+| order by name asc
